@@ -1,1 +1,5 @@
 .vercel
+.claude
+*.zip
+temp_design/
+*.sed
