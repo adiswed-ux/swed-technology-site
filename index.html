@@ -453,6 +453,118 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
 </script>
 
 <script>
+/* Narrow-screen layout, enforced from script.
+ *
+ * The CSS breakpoints below cover ordinary browsers, but a phone set to
+ * "request desktop site" reports a layout viewport of about a thousand pixels
+ * while its screen is nearer four hundred. No width media query can fire in
+ * that state, so the page renders at desktop proportions and the visitor pans
+ * around a layout that never fits. This reads the physical screen instead,
+ * which that setting does not change, and writes inline styles — those answer
+ * to no selector and no media query. */
+(function () {
+  var root = document.documentElement;
+  var viewportTag = document.querySelector('meta[name=viewport]');
+
+  function screenMin() { return Math.min(screen.width, screen.height); }
+  function isPhone() { return screenMin() <= 820; }
+  function isNarrow() { return root.clientWidth <= 900 || isPhone(); }
+
+  // Put the viewport back when a phone is being laid out as a desktop.
+  function correctViewport() {
+    if (isPhone() && root.clientWidth > screenMin() * 1.4 && viewportTag) {
+      viewportTag.setAttribute('content', 'width=device-width, initial-scale=1');
+    }
+  }
+
+  /* Remembers what the element carried before we touched it, so widening the
+     window restores that value instead of blanking the property. Several of
+     these are authored inline — the header's justify-content, the h1 size —
+     and clearing them outright is not the same as undoing our change. */
+  function set(el, prop, value) {
+    if (!el) return;
+    var key = 'was' + prop.charAt(0).toUpperCase() + prop.slice(1);
+    if (el.dataset[key] === undefined) el.dataset[key] = el.style[prop] || '';
+    el.style[prop] = value === null ? el.dataset[key] : value;
+  }
+
+  /* Resolved once, before anything is mutated, and searched across the whole
+     document: the footer is nested inside the contact section rather than
+     sitting beside it, so a scan of the root's own children misses it. */
+  var footer = Array.prototype.find.call(document.querySelectorAll('div'), function (el) {
+    return el.style.justifyContent === 'space-between' && el.style.alignItems === 'flex-end';
+  }) || null;
+
+  var PADDING = {
+    '104px 60px 88px': '52px 20px 46px',
+    '84px 60px': '48px 20px',
+    '0px 60px 84px': '0 20px 48px',
+    '44px 60px': '32px 20px',
+    '18px 60px': '14px 18px'
+  };
+
+  function apply() {
+    var narrow = isNarrow();
+
+    document.querySelectorAll('[style*="grid-template-columns"]').forEach(function (el) {
+      if ((el.getAttribute('style') || '').indexOf('auto-fit') > -1) return;
+      set(el, 'gridTemplateColumns', narrow ? '1fr' : null);
+    });
+
+    document.querySelectorAll('[data-site-root] > div, #contactForm').forEach(function (el) {
+      var was = el.dataset.wasPadding !== undefined ? el.dataset.wasPadding : el.style.padding;
+      var swap = PADDING[was.replace(/\s+/g, ' ').trim()];
+      if (swap) set(el, 'padding', narrow ? swap : null);
+    });
+
+    set(document.querySelector('#top h1'), 'fontSize', narrow ? 'clamp(29px,8vw,52px)' : null);
+
+    // Header: let the logo and the nav stack instead of running off the edge.
+    var header = document.querySelector('[data-nostagger]');
+    if (header) {
+      set(header, 'flexWrap', narrow ? 'wrap' : null);
+      set(header, 'justifyContent', narrow ? 'center' : null);
+      set(header, 'rowGap', narrow ? '6px' : null);
+      var nav = header.lastElementChild;
+      set(nav, 'flexWrap', narrow ? 'wrap' : null);
+      set(nav, 'justifyContent', narrow ? 'center' : null);
+      set(nav, 'gap', narrow ? '4px 15px' : null);
+      set(nav, 'fontSize', narrow ? '12.5px' : null);
+    }
+
+    // Footer stacks; its right-hand column stops being right-aligned.
+    if (footer) {
+      set(footer, 'flexDirection', narrow ? 'column' : null);
+      set(footer, 'alignItems', narrow ? 'flex-start' : null);
+      set(footer.lastElementChild, 'textAlign', narrow ? 'left' : null);
+    }
+
+    // Submit row: status text above a full-width button.
+    var submit = document.querySelector('#contactForm button[type=submit]');
+    if (submit) {
+      set(submit, 'width', narrow ? '100%' : null);
+      set(submit.parentElement, 'flexWrap', narrow ? 'wrap' : null);
+    }
+
+    // The product mock-ups are 380px of empty texture on a phone.
+    document.querySelectorAll('#products div').forEach(function (el) {
+      if (el.dataset.wasHeight === undefined && el.style.height !== '380px') return;
+      set(el, 'height', narrow ? '170px' : null);
+    });
+
+    // Nothing on the page should be reachable only by panning sideways.
+    set(root, 'overflowX', narrow ? 'hidden' : null);
+    set(document.body, 'overflowX', narrow ? 'hidden' : null);
+  }
+
+  correctViewport();
+  apply();
+  addEventListener('resize', apply, { passive: true });
+  addEventListener('orientationchange', function () { correctViewport(); apply(); });
+})();
+</script>
+
+<script>
 (function () {
   var form = document.getElementById('contactForm');
   if (!form) return;
