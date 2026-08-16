@@ -522,14 +522,28 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
     // Header: let the logo and the nav stack instead of running off the edge.
     var header = document.querySelector('[data-nostagger]');
     if (header) {
+      /* Six links at a comfortable tap size wrap onto two rows, which makes the
+         bar around 144px — a fifth of a phone screen. Worth it once, not for
+         the whole visit, so it scrolls away here instead of staying pinned. */
+      set(header, 'position', narrow ? 'static' : null);
       set(header, 'flexWrap', narrow ? 'wrap' : null);
       set(header, 'justifyContent', narrow ? 'center' : null);
       set(header, 'rowGap', narrow ? '6px' : null);
       var nav = header.lastElementChild;
       set(nav, 'flexWrap', narrow ? 'wrap' : null);
       set(nav, 'justifyContent', narrow ? 'center' : null);
-      set(nav, 'gap', narrow ? '4px 15px' : null);
-      set(nav, 'fontSize', narrow ? '12.5px' : null);
+      set(nav, 'gap', narrow ? '2px 4px' : null);
+      set(nav, 'fontSize', narrow ? '15.5px' : null);
+
+      /* The links are bare text, so their tappable area was only as tall as a
+         line of type. Padding brings each one up to the 44px minimum that both
+         Apple and Google give for touch targets. */
+      Array.prototype.forEach.call(nav.querySelectorAll('a'), function (a) {
+        set(a, 'display', narrow ? 'inline-flex' : null);
+        set(a, 'alignItems', narrow ? 'center' : null);
+        set(a, 'minHeight', narrow ? '44px' : null);
+        set(a, 'padding', narrow ? '0 11px' : null);
+      });
     }
 
     // Footer stacks; its right-hand column stops being right-aligned.
