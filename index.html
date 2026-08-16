@@ -17,7 +17,56 @@ input,textarea{transition:border-color .2s,box-shadow .2s}
 input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3px rgba(56,63,135,.12)}
 @keyframes om-drift{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @keyframes om-pulse{0%,100%{box-shadow:0 0 0 0 oklch(72% .13 220 / .45)}70%{box-shadow:0 0 0 9px oklch(72% .13 220 / 0)}}
-@media (prefers-reduced-motion:reduce){[data-ring],[data-ring2],[data-dot]{animation:none}}</style>
+@media (prefers-reduced-motion:reduce){[data-ring],[data-ring2],[data-dot]{animation:none}}
+
+/* ── Narrow screens ──────────────────────────────────────────────────────
+   The layout is written in inline styles, so these rules match on the style
+   values themselves and need !important to win. Without them the fixed 60px
+   gutters, the 440px product column and the 68px headline all run past the
+   viewport, and because the root clips overflow the excess is not scrollable
+   — it simply disappears. */
+@media (max-width:900px){
+  [style*="padding:84px 60px"]{padding:56px 28px!important}
+  [style*="padding:104px 60px 88px"]{padding:64px 28px 56px!important}
+  [style*="padding:0 60px 84px"]{padding:0 28px 56px!important}
+  [style*="padding:44px 60px"]{padding:38px 28px!important}
+  [style*="padding:18px 60px"]{padding:14px 20px!important}
+
+  [style*="grid-template-columns:1fr 1fr"]:not([style*="gap:8px 24px"]),
+  [style*="grid-template-columns:1.15fr 1fr"],
+  [style*="grid-template-columns:1fr 1.4fr"],
+  [style*="grid-template-columns:440px 1fr"],
+  [style*="grid-template-columns:1fr 440px"]{grid-template-columns:1fr!important}
+  [style*="gap:72px"],[style*="gap:64px"],[style*="gap:56px"]{gap:34px!important}
+
+  #top h1{font-size:clamp(31px,8.2vw,52px)!important;letter-spacing:-.03em!important}
+  h2{font-size:clamp(25px,5.8vw,34px)!important}
+  h3{font-size:clamp(23px,5.2vw,30px)!important}
+  #top p{font-size:16px!important}
+
+  /* the product mock-ups are 380px of empty texture on a phone */
+  [style*="height:380px"]{height:190px!important}
+
+  /* header: let the nav wrap under the logo instead of running off the edge */
+  [data-nostagger][style*="position:sticky"]{flex-wrap:wrap;justify-content:center;gap:8px 14px}
+  [data-nostagger][style*="position:sticky"]>div:last-child{flex-wrap:wrap;justify-content:center;gap:6px 16px!important;font-size:12.5px!important}
+
+  /* footer stacks */
+  [style*="justify-content:space-between;align-items:flex-end"]{flex-direction:column;align-items:flex-start!important;gap:22px!important}
+  [style*="justify-content:space-between;align-items:flex-end"]>div:last-child{text-align:left!important}
+
+  /* form: status text above a full-width button rather than squeezed beside it */
+  #contactForm>div:last-child{flex-wrap:wrap;justify-content:stretch!important}
+  #contactForm button[type=submit]{width:100%}
+}
+@media (max-width:560px){
+  [style*="padding:84px 60px"]{padding:48px 20px!important}
+  [style*="padding:104px 60px 88px"]{padding:52px 20px 46px!important}
+  [style*="padding:0 60px 84px"]{padding:0 20px 48px!important}
+  [style*="padding:44px 60px"]{padding:32px 20px!important}
+  [style*="gap:8px 24px"]{grid-template-columns:1fr!important}
+  [style*="height:380px"]{height:150px!important}
+}</style>
 </head><body>
 
 
