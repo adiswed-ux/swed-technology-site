@@ -260,18 +260,22 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
 <div style="display:flex;gap:12px;align-items:center"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.45);width:70px">Address</span><span style="font-size:15px;color:rgba(13,16,48,.8)">Menachem Begin 156, Tel Aviv</span></div>
 </div>
 </div>
-<div style="background:#fff;border:1px solid rgba(13,16,48,.1);border-radius:18px;padding:30px;display:grid;gap:16px">
+<form id="contactForm" novalidate style="background:#fff;border:1px solid rgba(13,16,48,.1);border-radius:18px;padding:30px;display:grid;gap:16px">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Name</span><input type="text" placeholder="Full name" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
-<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Organization</span><input type="text" placeholder="Company or institution" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
+<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Name</span><input name="name" type="text" required autocomplete="name" placeholder="Full name" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
+<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Organization</span><input name="organization" type="text" autocomplete="organization" placeholder="Company or institution" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Email</span><input type="email" placeholder="you@company.com" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
-<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Phone</span><input type="tel" placeholder="Optional" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
+<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Email</span><input name="email" type="email" required autocomplete="email" placeholder="you@company.com" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
+<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">Phone</span><input name="phone" type="tel" autocomplete="tel" placeholder="Optional" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff"></label>
 </div>
-<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">How can we help</span><textarea rows="4" placeholder="Brief description of the product, system or demo you're looking for" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff;resize:vertical"></textarea></label>
-<div style="display:flex;justify-content:flex-end"><span style="padding:13px 26px;border-radius:99px;background:#383f87;color:#fff;font-size:14px;font-weight:700;cursor:pointer">Send message</span></div>
+<label style="display:grid;gap:7px"><span style="font:500 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.1em;color:rgba(13,16,48,.5)">How can we help</span><textarea name="message" rows="4" required placeholder="Brief description of the product, system or demo you're looking for" style="padding:12px 14px;border:1px solid rgba(13,16,48,.16);border-radius:10px;font-size:14.5px;color:#0d1030;background:#fff;resize:vertical"></textarea></label>
+<div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)"><label>Leave this field empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+<div style="display:flex;justify-content:flex-end;align-items:center;gap:16px">
+<p id="formStatus" role="status" aria-live="polite" style="margin:0;font-size:13.5px;line-height:1.45;color:rgba(13,16,48,.62);flex:1"></p>
+<button type="submit" style="padding:13px 26px;border-radius:99px;background:#383f87;color:#fff;font:700 14px/1 inherit;font-family:inherit;border:none;cursor:pointer;transition:opacity .2s;white-space:nowrap">Send message</button>
 </div>
+</form>
 </div>
 
 <div style="padding:44px 60px;border-top:1px solid rgba(238,240,250,.12);display:flex;justify-content:space-between;align-items:flex-end;gap:40px">
@@ -388,6 +392,63 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
   bind('resetA11y', function () { state = { a11yOpen: state.a11yOpen, zoom: 1, contrast: false, grayscale: false, underline: false, stopMotion: false }; applyA11y(); });
 
   applyA11y();
+})();
+</script>
+
+<script>
+(function () {
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  var status = document.getElementById('formStatus');
+  var button = form.querySelector('button[type=submit]');
+
+  var ENDPOINT = '/api/contact';
+
+  function say(msg, tone) {
+    status.textContent = msg;
+    status.style.color = tone === 'bad' ? '#a3283a' : tone === 'good' ? '#1c7a4b' : 'rgba(13,16,48,.62)';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Honeypot: a human never sees this field, so anything in it is a bot.
+    if (form.website.value) return;
+
+    if (!form.checkValidity()) {
+      say('Please add your name, a valid email address, and a short message.', 'bad');
+      var firstBad = form.querySelector(':invalid');
+      if (firstBad) firstBad.focus();
+      return;
+    }
+
+    if (!ENDPOINT) {
+      say('This form is not connected yet — please email us in the meantime.', 'bad');
+      return;
+    }
+
+    button.disabled = true;
+    button.style.opacity = '.55';
+    say('Sending…');
+
+    var payload = {};
+    new FormData(form).forEach(function (v, k) { payload[k] = v; });
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      form.reset();
+      say('Thank you — your message is on its way. We reply within one business day.', 'good');
+    }).catch(function () {
+      say('Something went wrong sending that. Please try again in a moment.', 'bad');
+    }).then(function () {
+      button.disabled = false;
+      button.style.opacity = '';
+    });
+  });
 })();
 </script>
 </body></html>
