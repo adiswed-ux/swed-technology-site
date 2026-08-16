@@ -25,7 +25,11 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
    gutters, the 440px product column and the 68px headline all run past the
    viewport, and because the root clips overflow the excess is not scrollable
    — it simply disappears. */
-@media (max-width:900px){
+/* The second condition catches a phone whose browser is set to "request desktop
+   site". Safari then reports a ~1000px layout viewport, so a width query alone
+   never fires and the visitor gets the desktop grid on a 6-inch screen.
+   max-device-width reads the physical screen, which that setting does not change. */
+@media (max-width:900px), (pointer:coarse) and (max-device-width:820px){
   [style*="padding:84px 60px"]{padding:56px 28px!important}
   [style*="padding:104px 60px 88px"]{padding:64px 28px 56px!important}
   [style*="padding:0 60px 84px"]{padding:0 28px 56px!important}
@@ -59,7 +63,7 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
   #contactForm>div:last-child{flex-wrap:wrap;justify-content:stretch!important}
   #contactForm button[type=submit]{width:100%}
 }
-@media (max-width:560px){
+@media (max-width:560px), (pointer:coarse) and (max-device-width:480px){
   [style*="padding:84px 60px"]{padding:48px 20px!important}
   [style*="padding:104px 60px 88px"]{padding:52px 20px 46px!important}
   [style*="padding:0 60px 84px"]{padding:0 20px 48px!important}
@@ -70,7 +74,7 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
 </head><body>
 
 
-<div data-site-root="" style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color:#eef0fa;background:#0d1030;overflow-x:hidden">
+<div data-site-root="" style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color:#eef0fa;background:#0d1030">
 
 <div data-nostagger="" style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(13,16,48,.86);backdrop-filter:blur(14px);border-bottom:1px solid rgba(238,240,250,.1)">
 <a href="#top" style="display:flex;align-items:center;gap:11px"><div data-dot="" style="width:11px;height:11px;background:oklch(72% .13 220);border-radius:50%"></div><span style="font-size:16.5px;font-weight:700;letter-spacing:-.02em">Swed Technology Ltd</span></a>
