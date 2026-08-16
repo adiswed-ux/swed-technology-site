@@ -443,16 +443,107 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
     };
   }
 
+  // Gradient noise. The Milky Way's structure is fractal — the same clumping
+  // repeats at every scale — so layered noise is what separates a real star
+  // cloud from an airbrushed smudge.
+  function makeNoise(seed) {
+    var perm = new Uint8Array(512), src = new Uint8Array(256), r = seeded(seed), i, j, t;
+    for (i = 0; i < 256; i++) src[i] = i;
+    for (i = 255; i > 0; i--) { j = (r() * (i + 1)) | 0; t = src[i]; src[i] = src[j]; src[j] = t; }
+    for (i = 0; i < 512; i++) perm[i] = src[i & 255];
+    function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+    function grad(h, x, y) {
+      switch (h & 3) { case 0: return x + y; case 1: return y - x; case 2: return x - y; default: return -x - y; }
+    }
+    return function (x, y) {
+      var X = Math.floor(x), Y = Math.floor(y), xf = x - X, yf = y - Y;
+      X &= 255; Y &= 255;
+      var u = fade(xf), v = fade(yf);
+      var aa = grad(perm[perm[X] + Y], xf, yf), ba = grad(perm[perm[X + 1] + Y], xf - 1, yf);
+      var ab = grad(perm[perm[X] + Y + 1], xf, yf - 1), bb = grad(perm[perm[X + 1] + Y + 1], xf - 1, yf - 1);
+      var x1 = aa + u * (ba - aa), x2 = ab + u * (bb - ab);
+      return (x1 + v * (x2 - x1)) * 0.5 + 0.5;
+    };
+  }
+  function fbm(n, x, y, oct, lac, gain) {
+    var amp = 1, f = 1, sum = 0, norm = 0;
+    for (var i = 0; i < oct; i++) { sum += amp * n(x * f, y * f); norm += amp; f *= lac; amp *= gain; }
+    return sum / norm;
+  }
+
   var BAND_ANGLE = -0.62;   // tilt of the galactic plane against the polar axis
   var BAND_OFFSET = -0.11;  // signed distance from the pole, as a fraction of the
                             // canvas — negative swings the bright galactic core
                             // up into the open sky instead of down to the horizon
+  var NEB_N = 400;          // nebulosity is rendered small and scaled up; it is
+                            // diffuse by nature, so the interpolation is free detail
+
+  // Per-pixel star cloud. Returns the image plus the dust field, which the star
+  // pass reuses so that lanes of dust actually occlude the stars behind them.
+  function renderNebula() {
+    var N = NEB_N, cv = document.createElement('canvas');
+    cv.width = N; cv.height = N;
+    var ctx = cv.getContext('2d'), img = ctx.createImageData(N, N), d = img.data;
+    var dust = new Float32Array(N * N);
+    var nCloud = makeNoise(1337), nFine = makeNoise(4242), nDust = makeNoise(8811), nHa = makeNoise(2024);
+    var C = N / 2, sn = Math.sin(BAND_ANGLE), cs = Math.cos(BAND_ANGLE);
+    var bo = N * BAND_OFFSET, sigma = N * 0.068, span = N * 0.42;
+    for (var j = 0; j < N; j++) {
+      for (var i = 0; i < N; i++) {
+        var dx = i - C, dy = j - C;
+        var along = (cs * dx + sn * dy) / span;
+        var across = (-sn * dx + cs * dy) - bo;
+        var prof = Math.exp(-(across * across) / (2 * sigma * sigma)) * Math.exp(-(along * along) / 2.6);
+        var idx = j * N + i;
+        if (prof < 0.004) continue;
+        var u = i / N, v = j / N;
+        // two scales of clumping, multiplied so bright knots stay rare
+        var tex = Math.pow(fbm(nCloud, u * 6.5, v * 6.5, 4, 2.15, 0.55) * 0.7 +
+                           fbm(nFine, u * 19, v * 19, 3, 2.4, 0.5) * 0.3, 1.7) * 2.2;
+        // dark nebulae: filaments hugging the plane, like the Great Rift
+        var lane = Math.max(0, fbm(nDust, u * 4.4 + 11, v * 4.4, 4, 2.25, 0.6) - 0.44) / 0.56;
+        lane = Math.pow(lane, 0.75) * Math.exp(-(across * across) / (2 * sigma * 0.8 * sigma * 0.8));
+        dust[idx] = lane;
+        var val = prof * tex * (1 - 0.9 * lane);
+        if (val <= 0.002) continue;
+        // reddened towards the core, blue in the arms, with faint H-alpha knots
+        var core = Math.exp(-(along * along) / 0.22);
+        var ha = Math.max(0, fbm(nHa, u * 9 + 40, v * 9, 3, 2, 0.5) - 0.6) / 0.4;
+        var o = idx * 4;
+        d[o] = Math.min(255, 150 + 105 * core + 74 * ha);
+        d[o + 1] = Math.min(255, 180 + 40 * core - 34 * ha);
+        d[o + 2] = Math.min(255, 250 - 84 * core + 6 * ha);
+        d[o + 3] = Math.min(255, val * 138);
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    return { canvas: cv, dust: dust };
+  }
+
+  function blurCopy(src, px) {
+    var b = document.createElement('canvas');
+    b.width = src.width; b.height = src.height;
+    var bc = b.getContext('2d');
+    bc.filter = 'blur(' + px + 'px)';
+    bc.drawImage(src, 0, 0);
+    return b;
+  }
+
+  // Pre-rendered halo, drawn per star instead of building a gradient each time.
+  function haloSprite(hue) {
+    var R = 32, s = document.createElement('canvas');
+    s.width = s.height = R * 2;
+    var sc = s.getContext('2d'), g = sc.createRadialGradient(R, R, 0, R, R, R);
+    g.addColorStop(0, 'rgba(' + hue + ',1)');
+    g.addColorStop(0.26, 'rgba(' + hue + ',.26)');
+    g.addColorStop(1, 'rgba(' + hue + ',0)');
+    sc.fillStyle = g; sc.fillRect(0, 0, R * 2, R * 2);
+    return s;
+  }
 
   function paint(c, S) {
     var C = S / 2, rnd = seeded(20240701);
     var sin = Math.sin(BAND_ANGLE), cos = Math.cos(BAND_ANGLE), off = S * BAND_OFFSET;
-    // Perpendicular distance from a canvas point to the centre line of the band.
-    function bandDist(x, y) { return Math.abs(-sin * (x - C) + cos * (y - C) - off); }
 
     c.clearRect(0, 0, S, S);
 
@@ -464,102 +555,55 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
     c.fillStyle = deep;
     c.fillRect(0, 0, S, S);
 
-    c.save();
-    c.translate(C, C);
-    c.rotate(BAND_ANGLE);
-    c.translate(0, off);
-
+    // Star cloud, rendered per pixel then scaled up, with a soft pass underneath
+    // for the bloom a long lens exposure picks up.
+    var neb = renderNebula();
+    c.imageSmoothingEnabled = true;
+    c.imageSmoothingQuality = 'high';
     c.globalCompositeOperation = 'lighter';
-    var span = S * 0.78;
+    c.globalAlpha = 0.42;
+    c.drawImage(blurCopy(neb.canvas, NEB_N * 0.02), 0, 0, S, S);
+    c.globalAlpha = 1;
+    c.drawImage(neb.canvas, 0, 0, S, S);
 
-    // Continuous body of the disc — one long ellipse of light, drawn by
-    // squashing a radial gradient along the plane.
-    [[0.13, '255,236,206', 0.26], [0.26, '150,178,255', 0.13]].forEach(function (L) {
-      c.save();
-      c.scale(1, L[0]);
-      var bg = c.createRadialGradient(0, 0, 0, 0, 0, span);
-      bg.addColorStop(0, 'rgba(' + L[1] + ',' + L[2] + ')');
-      bg.addColorStop(0.42, 'rgba(' + L[1] + ',' + (L[2] * 0.5).toFixed(3) + ')');
-      bg.addColorStop(1, 'rgba(' + L[1] + ',0)');
-      c.fillStyle = bg;
-      c.beginPath(); c.arc(0, 0, span, 0, 6.2832); c.fill();
-      c.restore();
-    });
-
-    // Clumped texture over it: warm towards the core, cool out in the arms.
-    for (var i = 0; i < 260; i++) {
-      var t = rnd() * 2 - 1;
-      var core = Math.exp(-(t * t) / 0.2);
-      var x = t * span;
-      var y = (rnd() * 2 - 1) * S * 0.09 * (0.5 + 0.9 * (1 - core));
-      var r = S * (0.016 + rnd() * 0.08);
-      var a = (0.038 + rnd() * 0.072) * (0.35 + core);
-      var col = core > 0.45 ? '255,228,192' : (rnd() < 0.22 ? '196,168,255' : '170,200,255');
-      var g = c.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, 'rgba(' + col + ',' + a.toFixed(4) + ')');
-      g.addColorStop(1, 'rgba(' + col + ',0)');
-      c.fillStyle = g;
-      c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
+    function dustAt(x, y) {
+      var i = (x / S * NEB_N) | 0, j = (y / S * NEB_N) | 0;
+      if (i < 0 || j < 0 || i >= NEB_N || j >= NEB_N) return 0;
+      return neb.dust[j * NEB_N + i];
     }
 
-    // Dark nebulae — the rift of dust that splits the band lengthwise.
-    c.globalCompositeOperation = 'source-over';
-    for (var d = 0; d < 72; d++) {
-      var dt = rnd() * 2 - 1;
-      var dx = dt * span * 0.92;
-      var dy = (rnd() * 2 - 1) * S * 0.03;
-      var dr = S * (0.025 + rnd() * 0.085);
-      var da = 0.22 + rnd() * 0.4;
-      var squash = 0.2 + rnd() * 0.35;   // stretched along the plane, like real lanes
-      c.save();
-      c.translate(dx, dy);
-      c.rotate((rnd() - 0.5) * 0.5);
-      c.scale(1, squash);
-      var dg = c.createRadialGradient(0, 0, 0, 0, 0, dr);
-      dg.addColorStop(0, 'rgba(6,5,16,' + da.toFixed(3) + ')');
-      dg.addColorStop(0.5, 'rgba(6,5,16,' + (da * 0.55).toFixed(3) + ')');
-      dg.addColorStop(1, 'rgba(6,5,16,0)');
-      c.fillStyle = dg;
-      c.beginPath(); c.arc(0, 0, dr, 0, 6.2832); c.fill();
-      c.restore();
-    }
-    c.restore();
-
-    // Stars. Most sit in the band, the rest are scattered across the whole sky.
-    c.globalCompositeOperation = 'lighter';
+    // Stars. Density follows the galactic plane; brightness follows a steep
+    // power law, so faint stars vastly outnumber bright ones as they really do.
     var hues = ['201,216,255', '255,255,255', '255,255,255', '255,246,233', '255,214,168', '255,186,158'];
-    var total = Math.round(S * S / 1900);
-    var bright = [];
-    for (var s = 0; s < total; s++) {
-      var sx, sy;
-      if (rnd() < 0.62) {
-        var lx = (rnd() * 2 - 1) * span;
-        var ly = (rnd() * 2 - 1) * S * 0.105 * (rnd() < 0.5 ? 0.45 : 1);
-        sx = C + cos * lx - sin * (ly + off);
-        sy = C + sin * lx + cos * (ly + off);
-      } else {
-        sx = rnd() * S; sy = rnd() * S;
-      }
-      if (sx < 0 || sy < 0 || sx > S || sy > S) continue;
+    var sprites = hues.map(haloSprite);
+    var sigmaS = S * 0.085, target = Math.round(S * S / 1600), bright = [];
+    var placed = 0, guard = target * 10;
+    while (placed < target && guard-- > 0) {
+      var sx = rnd() * S, sy = rnd() * S;
+      var across = (-sin * (sx - C) + cos * (sy - C)) - off;
+      var prof = Math.exp(-(across * across) / (2 * sigmaS * sigmaS));
+      if (rnd() > 0.18 + 0.82 * prof) continue;
+      placed++;
 
-      var mag = rnd();
-      var rad = mag > 0.987 ? 1.5 + rnd() * 1.3 : mag > 0.9 ? 0.9 + rnd() * 0.5 : 0.35 + rnd() * 0.5;
-      var alpha = 0.3 + rnd() * 0.7;
-      // Stars near the plane read slightly dimmer, veiled by the dust in front.
-      alpha *= 0.72 + 0.28 * Math.min(1, bandDist(sx, sy) / (S * 0.13));
-      var hue = hues[(rnd() * hues.length) | 0];
+      var m = Math.pow(rnd(), 3.2);
+      var rad = 0.3 + m * 2.9;
+      var alpha = (0.22 + m * 0.78) * (1 - 0.75 * dustAt(sx, sy));
+      if (alpha < 0.04) continue;
+      var hi = (rnd() * hues.length) | 0, hue = hues[hi];
 
-      if (rad > 0.85) {
-        var hg = c.createRadialGradient(sx, sy, 0, sx, sy, rad * 5);
-        hg.addColorStop(0, 'rgba(' + hue + ',' + (alpha * 0.5).toFixed(3) + ')');
-        hg.addColorStop(1, 'rgba(' + hue + ',0)');
-        c.fillStyle = hg;
-        c.beginPath(); c.arc(sx, sy, rad * 5, 0, 6.2832); c.fill();
+      if (rad > 1.05) {
+        var hr = rad * 5.5;
+        c.globalAlpha = Math.min(1, alpha * 0.55);
+        c.drawImage(sprites[hi], sx - hr, sy - hr, hr * 2, hr * 2);
+        c.globalAlpha = 1;
       }
       c.fillStyle = 'rgba(' + hue + ',' + alpha.toFixed(3) + ')';
-      c.beginPath(); c.arc(sx, sy, rad, 0, 6.2832); c.fill();
-
-      if (rad > 1.9 && bright.length < 30) bright.push([sx, sy, rad, hue]);
+      if (rad < 0.8) {
+        c.fillRect(sx, sy, 1, 1);
+      } else {
+        c.beginPath(); c.arc(sx, sy, rad, 0, 6.2832); c.fill();
+      }
+      if (rad > 2.3 && bright.length < 30) bright.push([sx, sy, rad, hue]);
     }
 
     // Anamorphic flare on the few brightest stars.
@@ -627,9 +671,17 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
         (2.1 + tr() * 4.2).toFixed(2) + 's;animation-delay:-' + (tr() * 6).toFixed(2) + 's';
       rotor.appendChild(el);
     });
+
+    cv.style.opacity = '1';
   }
 
-  build();
+  // The per-pixel pass costs a couple of hundred milliseconds, so yield first
+  // and let the browser paint the copy, then fade the sky in behind it rather
+  // than stalling the page on load. Deliberately a timeout and not a rAF:
+  // rAF never fires while the tab is in the background, which would leave the
+  // hero blank for anyone who opens the site in a new tab and switches to it.
+  cv.style.cssText += ';opacity:0;transition:opacity .9s ease';
+  setTimeout(build, 30);
   var t;
   window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(build, 220); }, { passive: true });
 })();
