@@ -36,10 +36,15 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
   [style*="padding:44px 60px"]{padding:38px 28px!important}
   [style*="padding:18px 60px"]{padding:14px 20px!important}
 
-  [style*="grid-template-columns:1fr 1fr"]:not([style*="gap:8px 24px"]),
-  [style*="grid-template-columns:1.15fr 1fr"],
-  [style*="grid-template-columns:1fr 1.4fr"],
-  [style*="grid-template-columns:440px 1fr"],
+  /* Each grid is listed on its own so the rule uses nothing but plain attribute
+     matching. An earlier version leaned on :not() to spare the short feature
+     lists, and a WebKit build rejected that selector — which silently discards
+     the whole comma-separated rule, so the columns never collapsed on the one
+     device it mattered on while every other rule in this block still applied. */
+  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:1.15fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:1fr 1.4fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:440px 1fr"]{grid-template-columns:1fr!important}
   [style*="grid-template-columns:1fr 440px"]{grid-template-columns:1fr!important}
   [style*="gap:72px"],[style*="gap:64px"],[style*="gap:56px"]{gap:34px!important}
 
@@ -68,7 +73,6 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
   [style*="padding:104px 60px 88px"]{padding:52px 20px 46px!important}
   [style*="padding:0 60px 84px"]{padding:0 20px 48px!important}
   [style*="padding:44px 60px"]{padding:32px 20px!important}
-  [style*="gap:8px 24px"]{grid-template-columns:1fr!important}
   [style*="height:380px"]{height:150px!important}
 }</style>
 </head><body>
