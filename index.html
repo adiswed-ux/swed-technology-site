@@ -15,15 +15,19 @@
 a[href^="#"]{transition:opacity .2s}
 input,textarea{transition:border-color .2s,box-shadow .2s}
 input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3px rgba(56,63,135,.12)}
-[data-sky-rotor]{transform-origin:50% 50%;will-change:transform;animation:sky-spin 900s linear infinite}
-[data-twinkle]{position:absolute;border-radius:50%;background:#fff;animation:sky-twinkle 5.5s ease-in-out infinite}
+/* Hero photograph: a panel on the right that dissolves into the page colour on
+   every edge, so it reads as part of the background rather than a pasted box. */
+[data-sky]{position:absolute;right:0;top:0;bottom:0;width:53%;max-width:790px;pointer-events:none}
+[data-sky] img{width:100%;height:100%;object-fit:cover;display:block;
+  -webkit-mask-image:radial-gradient(74% 56% at 76% 52%,#000 0%,#000 26%,rgba(0,0,0,.86) 46%,rgba(0,0,0,.42) 64%,rgba(0,0,0,.1) 82%,rgba(0,0,0,0) 100%);
+  mask-image:radial-gradient(74% 56% at 76% 52%,#000 0%,#000 26%,rgba(0,0,0,.86) 46%,rgba(0,0,0,.42) 64%,rgba(0,0,0,.1) 82%,rgba(0,0,0,0) 100%)}
+[data-sky-credit]{position:absolute;right:60px;bottom:22px;z-index:2;font:400 10.5px/1 IBM Plex Mono,monospace;letter-spacing:.09em;color:rgba(238,240,250,.5)}
+[data-sky-credit]:hover{color:rgba(238,240,250,.82);opacity:1}
+@media (max-width:900px){[data-sky]{width:100%;opacity:.42}[data-sky-credit]{right:24px;bottom:14px}}
 @keyframes om-drift{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @keyframes om-pulse{0%,100%{box-shadow:0 0 0 0 oklch(72% .13 220 / .45)}70%{box-shadow:0 0 0 9px oklch(72% .13 220 / 0)}}
-@keyframes sky-spin{to{transform:rotate(360deg)}}
-@keyframes sky-twinkle{0%,100%{opacity:.2;transform:scale(.75)}50%{opacity:1;transform:scale(1.3)}}
-@media (prefers-reduced-motion:reduce){[data-ring],[data-ring2],[data-dot],[data-sky-rotor],[data-twinkle]{animation:none}}</style>
+@media (prefers-reduced-motion:reduce){[data-ring],[data-ring2],[data-dot]{animation:none}}</style>
 </head><body>
-
 
 <div data-site-root="" style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color:#eef0fa;background:#0d1030;overflow-x:hidden">
 
@@ -35,31 +39,13 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
 </div>
 
 <div id="top" style="position:relative;padding:104px 60px 88px;overflow:hidden">
-<div data-sky="" aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;background:#0d1030">
-<div data-sky-rotor="" style="position:absolute;left:0;top:0;width:0;height:0"><canvas style="display:block;width:100%;height:100%"></canvas></div>
-<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(46,58,124,0) 40%,rgba(46,58,124,.2) 60%,rgba(66,82,152,.36) 73%,rgba(46,58,124,.18) 84%,rgba(13,16,48,0) 100%)"></div>
-<div style="position:absolute;inset:0;background:radial-gradient(125% 95% at 66% 12%,rgba(13,16,48,0) 0%,rgba(13,16,48,.3) 55%,rgba(13,16,48,.74) 100%)"></div>
-<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,16,48,.72) 0%,rgba(13,16,48,.34) 40%,rgba(13,16,48,0) 74%)"></div>
-<div style="position:absolute;inset:0;background:radial-gradient(72% 58% at 28% 40%,rgba(13,16,48,.9) 0%,rgba(13,16,48,.82) 46%,rgba(13,16,48,.4) 76%,rgba(13,16,48,0) 100%)"></div>
-<div style="position:absolute;left:0;right:0;bottom:0;height:46%;background:radial-gradient(66% 56% at 56% 50%,rgba(255,150,66,.36) 0%,rgba(255,118,50,.15) 38%,rgba(13,16,48,0) 70%)"></div>
-<svg viewBox="0 0 1440 200" preserveAspectRatio="none" style="position:absolute;left:0;right:0;bottom:0;width:100%;height:36%;display:block">
-<path fill="#0e1434" d="M0,74 L120,54 L214,68 L322,30 L432,52 L522,38 L640,66 L742,46 L862,70 L962,50 L1082,72 L1182,54 L1302,74 L1440,56 L1440,200 L0,200 Z"></path>
-<path fill="#080b20" d="M0,104 L112,90 L232,106 L342,78 L452,96 L562,84 L682,110 L802,92 L922,112 L1042,94 L1162,114 L1282,98 L1440,110 L1440,200 L0,200 Z"></path>
-</svg>
-<svg viewBox="0 0 200 132" style="position:absolute;right:14%;bottom:15%;width:clamp(104px,12vw,182px);height:auto;display:block">
-<g fill="#05060f">
-<path d="M96,132 L94.6,98 C94,90 91.6,85 87,81.4 L90.4,78.4 C95.4,82.6 98.2,88 99.2,94.6 L100.8,94.6 C102,86.4 105.4,80.4 111.8,75.6 L114.6,79 C108.6,83.6 105.4,89.6 104.6,97.4 L105.8,132 Z"></path>
-<path d="M99,84 L74,68 L76.4,64.6 L100.6,79.8 L124.6,63.4 L127.2,66.8 Z"></path>
-<path d="M32,74.5 C39,58 57.5,47.5 80,44.4 C98.5,41.8 117,42.2 133.5,46.4 C154,51.6 168.5,61.4 175,74.5 C161,69 145.5,65.6 128.5,63.8 C110,61.8 90,62.2 72,65.4 C55.5,68.3 42,71 32,74.5 Z"></path>
-<path d="M52,66.6 C60,57.4 74,51.4 90,49.4 C82,53.4 74.5,58.4 68.5,64.4 Z"></path>
-<path d="M148,66.2 C141,57.6 128.5,51.8 114,49.6 C122,53.4 129,58.2 134.5,63.8 Z"></path>
-</g>
-</svg>
-<svg viewBox="0 0 1440 90" preserveAspectRatio="none" style="position:absolute;left:0;right:0;bottom:0;width:100%;height:13%;display:block">
-<path fill="#05060f" d="M0,34 L170,26 L330,38 L490,28 L650,40 L810,30 L970,42 L1130,32 L1290,42 L1440,34 L1440,90 L0,90 Z"></path>
-</svg>
-<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,16,48,0) 84%,rgba(13,16,48,.45) 100%)"></div>
+<div data-sky="" aria-hidden="true">
+<picture>
+<source type="image/webp" srcset="img/milkyway-1100.webp 1100w, img/milkyway-2000.webp 2000w" sizes="(max-width:900px) 86vw, 58vw">
+<img src="img/milkyway-1600.jpg" width="2000" height="1718" alt="" decoding="async" fetchpriority="high">
+</picture>
 </div>
+<a data-sky-credit="" href="https://www.eso.org/public/images/potw2115a/" target="_blank" rel="noopener">Milky Way over the Atacama · ESO/P. Horálek · CC BY 4.0</a>
 <div style="position:absolute;inset:-45% 32% 28% -12%;background:radial-gradient(closest-side,oklch(55% .16 265 / .2),transparent);pointer-events:none"></div>
 <div data-ring="" style="position:absolute;right:-8%;top:2%;width:560px;height:560px;border-radius:50%;border:1px solid rgba(238,240,250,.05)"></div>
 <div data-ring2="" style="position:absolute;right:1%;top:13%;width:400px;height:400px;border-radius:50%;border:1px solid rgba(238,240,250,.035)"></div>
@@ -420,270 +406,4 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
 })();
 </script>
 
-<script>
-/* Milky Way hero sky.
-   The whole star field is painted once into a canvas, then the canvas is spun
-   by CSS around a celestial pole placed just off the top-right of the section —
-   the way the sky turns for an observer on the ground. Rotating a rasterised
-   layer stays on the compositor, so the animation costs nothing per frame. */
-(function () {
-  var host = document.querySelector('[data-sky]');
-  if (!host) return;
-  var rotor = host.querySelector('[data-sky-rotor]');
-  var cv = rotor.querySelector('canvas');
-  if (!cv || !cv.getContext) return;
-
-  // Deterministic PRNG so the sky is identical on every load and every resize.
-  function seeded(s) {
-    return function () {
-      s |= 0; s = s + 0x6D2B79F5 | 0;
-      var t = Math.imul(s ^ s >>> 15, 1 | s);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-
-  // Gradient noise. The Milky Way's structure is fractal — the same clumping
-  // repeats at every scale — so layered noise is what separates a real star
-  // cloud from an airbrushed smudge.
-  function makeNoise(seed) {
-    var perm = new Uint8Array(512), src = new Uint8Array(256), r = seeded(seed), i, j, t;
-    for (i = 0; i < 256; i++) src[i] = i;
-    for (i = 255; i > 0; i--) { j = (r() * (i + 1)) | 0; t = src[i]; src[i] = src[j]; src[j] = t; }
-    for (i = 0; i < 512; i++) perm[i] = src[i & 255];
-    function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
-    function grad(h, x, y) {
-      switch (h & 3) { case 0: return x + y; case 1: return y - x; case 2: return x - y; default: return -x - y; }
-    }
-    return function (x, y) {
-      var X = Math.floor(x), Y = Math.floor(y), xf = x - X, yf = y - Y;
-      X &= 255; Y &= 255;
-      var u = fade(xf), v = fade(yf);
-      var aa = grad(perm[perm[X] + Y], xf, yf), ba = grad(perm[perm[X + 1] + Y], xf - 1, yf);
-      var ab = grad(perm[perm[X] + Y + 1], xf, yf - 1), bb = grad(perm[perm[X + 1] + Y + 1], xf - 1, yf - 1);
-      var x1 = aa + u * (ba - aa), x2 = ab + u * (bb - ab);
-      return (x1 + v * (x2 - x1)) * 0.5 + 0.5;
-    };
-  }
-  function fbm(n, x, y, oct, lac, gain) {
-    var amp = 1, f = 1, sum = 0, norm = 0;
-    for (var i = 0; i < oct; i++) { sum += amp * n(x * f, y * f); norm += amp; f *= lac; amp *= gain; }
-    return sum / norm;
-  }
-
-  var BAND_ANGLE = -0.62;   // tilt of the galactic plane against the polar axis
-  var BAND_OFFSET = -0.11;  // signed distance from the pole, as a fraction of the
-                            // canvas — negative swings the bright galactic core
-                            // up into the open sky instead of down to the horizon
-  var NEB_N = 400;          // nebulosity is rendered small and scaled up; it is
-                            // diffuse by nature, so the interpolation is free detail
-
-  // Per-pixel star cloud. Returns the image plus the dust field, which the star
-  // pass reuses so that lanes of dust actually occlude the stars behind them.
-  function renderNebula() {
-    var N = NEB_N, cv = document.createElement('canvas');
-    cv.width = N; cv.height = N;
-    var ctx = cv.getContext('2d'), img = ctx.createImageData(N, N), d = img.data;
-    var dust = new Float32Array(N * N);
-    var nCloud = makeNoise(1337), nFine = makeNoise(4242), nDust = makeNoise(8811), nHa = makeNoise(2024);
-    var C = N / 2, sn = Math.sin(BAND_ANGLE), cs = Math.cos(BAND_ANGLE);
-    var bo = N * BAND_OFFSET, sigma = N * 0.068, span = N * 0.42;
-    for (var j = 0; j < N; j++) {
-      for (var i = 0; i < N; i++) {
-        var dx = i - C, dy = j - C;
-        var along = (cs * dx + sn * dy) / span;
-        var across = (-sn * dx + cs * dy) - bo;
-        var prof = Math.exp(-(across * across) / (2 * sigma * sigma)) * Math.exp(-(along * along) / 2.6);
-        var idx = j * N + i;
-        if (prof < 0.004) continue;
-        var u = i / N, v = j / N;
-        // two scales of clumping, multiplied so bright knots stay rare
-        var tex = Math.pow(fbm(nCloud, u * 6.5, v * 6.5, 4, 2.15, 0.55) * 0.7 +
-                           fbm(nFine, u * 19, v * 19, 3, 2.4, 0.5) * 0.3, 1.7) * 2.2;
-        // dark nebulae: filaments hugging the plane, like the Great Rift
-        var lane = Math.max(0, fbm(nDust, u * 4.4 + 11, v * 4.4, 4, 2.25, 0.6) - 0.44) / 0.56;
-        lane = Math.pow(lane, 0.75) * Math.exp(-(across * across) / (2 * sigma * 0.8 * sigma * 0.8));
-        dust[idx] = lane;
-        var val = prof * tex * (1 - 0.9 * lane);
-        if (val <= 0.002) continue;
-        // reddened towards the core, blue in the arms, with faint H-alpha knots
-        var core = Math.exp(-(along * along) / 0.22);
-        var ha = Math.max(0, fbm(nHa, u * 9 + 40, v * 9, 3, 2, 0.5) - 0.6) / 0.4;
-        var o = idx * 4;
-        d[o] = Math.min(255, 150 + 105 * core + 74 * ha);
-        d[o + 1] = Math.min(255, 180 + 40 * core - 34 * ha);
-        d[o + 2] = Math.min(255, 250 - 84 * core + 6 * ha);
-        d[o + 3] = Math.min(255, val * 138);
-      }
-    }
-    ctx.putImageData(img, 0, 0);
-    return { canvas: cv, dust: dust };
-  }
-
-  function blurCopy(src, px) {
-    var b = document.createElement('canvas');
-    b.width = src.width; b.height = src.height;
-    var bc = b.getContext('2d');
-    bc.filter = 'blur(' + px + 'px)';
-    bc.drawImage(src, 0, 0);
-    return b;
-  }
-
-  // Pre-rendered halo, drawn per star instead of building a gradient each time.
-  function haloSprite(hue) {
-    var R = 32, s = document.createElement('canvas');
-    s.width = s.height = R * 2;
-    var sc = s.getContext('2d'), g = sc.createRadialGradient(R, R, 0, R, R, R);
-    g.addColorStop(0, 'rgba(' + hue + ',1)');
-    g.addColorStop(0.26, 'rgba(' + hue + ',.26)');
-    g.addColorStop(1, 'rgba(' + hue + ',0)');
-    sc.fillStyle = g; sc.fillRect(0, 0, R * 2, R * 2);
-    return s;
-  }
-
-  function paint(c, S) {
-    var C = S / 2, rnd = seeded(20240701);
-    var sin = Math.sin(BAND_ANGLE), cos = Math.cos(BAND_ANGLE), off = S * BAND_OFFSET;
-
-    c.clearRect(0, 0, S, S);
-
-    // Base stays in the site's navy (#0d1030); the radial lift only adds depth.
-    var deep = c.createRadialGradient(C, C, 0, C, C, C);
-    deep.addColorStop(0, '#121740');
-    deep.addColorStop(0.6, '#0d1030');
-    deep.addColorStop(1, '#090b26');
-    c.fillStyle = deep;
-    c.fillRect(0, 0, S, S);
-
-    // Star cloud, rendered per pixel then scaled up, with a soft pass underneath
-    // for the bloom a long lens exposure picks up.
-    var neb = renderNebula();
-    c.imageSmoothingEnabled = true;
-    c.imageSmoothingQuality = 'high';
-    c.globalCompositeOperation = 'lighter';
-    c.globalAlpha = 0.42;
-    c.drawImage(blurCopy(neb.canvas, NEB_N * 0.02), 0, 0, S, S);
-    c.globalAlpha = 1;
-    c.drawImage(neb.canvas, 0, 0, S, S);
-
-    function dustAt(x, y) {
-      var i = (x / S * NEB_N) | 0, j = (y / S * NEB_N) | 0;
-      if (i < 0 || j < 0 || i >= NEB_N || j >= NEB_N) return 0;
-      return neb.dust[j * NEB_N + i];
-    }
-
-    // Stars. Density follows the galactic plane; brightness follows a steep
-    // power law, so faint stars vastly outnumber bright ones as they really do.
-    var hues = ['201,216,255', '255,255,255', '255,255,255', '255,246,233', '255,214,168', '255,186,158'];
-    var sprites = hues.map(haloSprite);
-    var sigmaS = S * 0.085, target = Math.round(S * S / 1600), bright = [];
-    var placed = 0, guard = target * 10;
-    while (placed < target && guard-- > 0) {
-      var sx = rnd() * S, sy = rnd() * S;
-      var across = (-sin * (sx - C) + cos * (sy - C)) - off;
-      var prof = Math.exp(-(across * across) / (2 * sigmaS * sigmaS));
-      if (rnd() > 0.18 + 0.82 * prof) continue;
-      placed++;
-
-      var m = Math.pow(rnd(), 3.2);
-      var rad = 0.3 + m * 2.9;
-      var alpha = (0.22 + m * 0.78) * (1 - 0.75 * dustAt(sx, sy));
-      if (alpha < 0.04) continue;
-      var hi = (rnd() * hues.length) | 0, hue = hues[hi];
-
-      if (rad > 1.05) {
-        var hr = rad * 5.5;
-        c.globalAlpha = Math.min(1, alpha * 0.55);
-        c.drawImage(sprites[hi], sx - hr, sy - hr, hr * 2, hr * 2);
-        c.globalAlpha = 1;
-      }
-      c.fillStyle = 'rgba(' + hue + ',' + alpha.toFixed(3) + ')';
-      if (rad < 0.8) {
-        c.fillRect(sx, sy, 1, 1);
-      } else {
-        c.beginPath(); c.arc(sx, sy, rad, 0, 6.2832); c.fill();
-      }
-      if (rad > 2.3 && bright.length < 30) bright.push([sx, sy, rad, hue]);
-    }
-
-    // Anamorphic flare on the few brightest stars.
-    function spike(x, y, len, ang, a, hue) {
-      var ex = Math.cos(ang) * len, ey = Math.sin(ang) * len;
-      var g = c.createLinearGradient(x - ex, y - ey, x + ex, y + ey);
-      g.addColorStop(0, 'rgba(' + hue + ',0)');
-      g.addColorStop(0.5, 'rgba(' + hue + ',' + a + ')');
-      g.addColorStop(1, 'rgba(' + hue + ',0)');
-      c.strokeStyle = g;
-      c.lineWidth = 1;
-      c.beginPath(); c.moveTo(x - ex, y - ey); c.lineTo(x + ex, y + ey); c.stroke();
-    }
-    bright.slice(0, 12).forEach(function (b) {
-      var len = b[2] * 13;
-      spike(b[0], b[1], len, 0, 0.5, b[3]);
-      spike(b[0], b[1], len * 0.85, Math.PI / 2, 0.42, b[3]);
-      spike(b[0], b[1], len * 0.4, Math.PI / 4, 0.2, b[3]);
-      spike(b[0], b[1], len * 0.4, -Math.PI / 4, 0.2, b[3]);
-    });
-    c.globalCompositeOperation = 'source-over';
-
-    return bright;
-  }
-
-  var lastW = 0, lastH = 0;
-
-  function build() {
-    var w = host.clientWidth, h = host.clientHeight;
-    if (!w || !h || (w === lastW && h === lastH)) return;
-    lastW = w; lastH = h;
-
-    // The celestial pole sits inside the frame, far to the right. Its height is
-    // set the way Polaris actually sits for an observer at Israel's latitude —
-    // about 31 degrees above the horizon, which here lands just under halfway
-    // up. Keeping the pole visible is what makes the motion read as the ground
-    // turning rather than as a camera drifting through space.
-    var px = w * 0.92, py = h * 0.5;
-    var R = Math.max(
-      Math.hypot(px, py), Math.hypot(px - w, py),
-      Math.hypot(px, py - h), Math.hypot(px - w, py - h)
-    );
-    var need = Math.ceil(R * 2) + 2;
-    var S = Math.min(need, 2400);   // cap the bitmap; CSS scales it back up
-
-    rotor.style.width = need + 'px';
-    rotor.style.height = need + 'px';
-    rotor.style.left = (px - need / 2) + 'px';
-    rotor.style.top = (py - need / 2) + 'px';
-    cv.width = S; cv.height = S;
-
-    var bright = paint(cv.getContext('2d'), S) || [];
-
-    // Scintillation. Air turbulence makes stars flicker at their own irregular
-    // rates, so each one gets its own period and phase rather than a shared beat.
-    Array.prototype.slice.call(rotor.querySelectorAll('[data-twinkle]')).forEach(function (n) { n.remove(); });
-    var k = need / S, tr = seeded(90210);
-    bright.forEach(function (b, i) {
-      var el = document.createElement('span');
-      var size = Math.max(1.8, b[2] * 1.4) * k;
-      el.setAttribute('data-twinkle', '');
-      el.style.cssText = 'width:' + size.toFixed(1) + 'px;height:' + size.toFixed(1) + 'px;left:' +
-        (b[0] * k - size / 2).toFixed(1) + 'px;top:' + (b[1] * k - size / 2).toFixed(1) +
-        'px;box-shadow:0 0 ' + (size * 2.6).toFixed(1) + 'px rgba(' + b[3] + ',.9);animation-duration:' +
-        (2.1 + tr() * 4.2).toFixed(2) + 's;animation-delay:-' + (tr() * 6).toFixed(2) + 's';
-      rotor.appendChild(el);
-    });
-
-    cv.style.opacity = '1';
-  }
-
-  // The per-pixel pass costs a couple of hundred milliseconds, so yield first
-  // and let the browser paint the copy, then fade the sky in behind it rather
-  // than stalling the page on load. Deliberately a timeout and not a rAF:
-  // rAF never fires while the tab is in the background, which would leave the
-  // hero blank for anyone who opens the site in a new tab and switches to it.
-  cv.style.cssText += ';opacity:0;transition:opacity .9s ease';
-  setTimeout(build, 30);
-  var t;
-  window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(build, 220); }, { passive: true });
-})();
-</script>
 </body></html>
