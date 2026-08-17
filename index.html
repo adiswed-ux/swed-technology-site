@@ -20,10 +20,10 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
 /* Product shot presented at an angle, the way a device sits in a display case.
    The container carries the perspective so the phone and its shadow share one
    vanishing point; on hover it turns towards the reader. */
-[data-tilt]{transform:rotateY(-19deg) rotateX(6deg) rotateZ(-1.5deg);
+[data-tilt]{transform:rotateY(-18deg) rotateX(5deg) rotateZ(9deg);
   box-shadow:26px 34px 66px -22px rgba(13,16,48,.55),6px 8px 18px -8px rgba(13,16,48,.3);
   transition:transform .6s cubic-bezier(.2,.7,.3,1),box-shadow .6s cubic-bezier(.2,.7,.3,1)}
-[data-tilt]:hover{transform:rotateY(-7deg) rotateX(2deg) rotateZ(0deg);
+[data-tilt]:hover{transform:rotateY(-6deg) rotateX(2deg) rotateZ(3deg);
   box-shadow:14px 26px 58px -20px rgba(13,16,48,.5),4px 6px 14px -6px rgba(13,16,48,.26)}
 @media (prefers-reduced-motion:reduce){[data-ring],[data-ring2],[data-dot]{animation:none}
   [data-tilt]{transition:none}}
