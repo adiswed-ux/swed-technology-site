@@ -17,7 +17,16 @@ input,textarea{transition:border-color .2s,box-shadow .2s}
 input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3px rgba(56,63,135,.12)}
 @keyframes om-drift{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @keyframes om-pulse{0%,100%{box-shadow:0 0 0 0 oklch(72% .13 220 / .45)}70%{box-shadow:0 0 0 9px oklch(72% .13 220 / 0)}}
-@media (prefers-reduced-motion:reduce){[data-ring],[data-ring2],[data-dot]{animation:none}}
+/* Product shot presented at an angle, the way a device sits in a display case.
+   The container carries the perspective so the phone and its shadow share one
+   vanishing point; on hover it turns towards the reader. */
+[data-tilt]{transform:rotateY(-19deg) rotateX(6deg) rotateZ(-1.5deg);
+  box-shadow:26px 34px 66px -22px rgba(13,16,48,.55),6px 8px 18px -8px rgba(13,16,48,.3);
+  transition:transform .6s cubic-bezier(.2,.7,.3,1),box-shadow .6s cubic-bezier(.2,.7,.3,1)}
+[data-tilt]:hover{transform:rotateY(-7deg) rotateX(2deg) rotateZ(0deg);
+  box-shadow:14px 26px 58px -20px rgba(13,16,48,.5),4px 6px 14px -6px rgba(13,16,48,.26)}
+@media (prefers-reduced-motion:reduce){[data-ring],[data-ring2],[data-dot]{animation:none}
+  [data-tilt]{transition:none}}
 
 /* ── Narrow screens ──────────────────────────────────────────────────────
    The layout is written in inline styles, so these rules match on the style
@@ -156,10 +165,10 @@ input:focus,textarea:focus{outline:none;border-color:#383f87;box-shadow:0 0 0 3p
 <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:38px"><span style="font:500 11px/1 IBM Plex Mono,monospace;letter-spacing:.16em;color:#383f87">OUR PRODUCTS — 01 / 02</span><span style="flex:1;height:1px;background:rgba(13,16,48,.15)"></span></div>
 
 <div id="dolphin" style="display:grid;grid-template-columns:440px 1fr;gap:56px;align-items:center;scroll-margin-top:80px">
-<div style="height:380px;border-radius:20px;background:radial-gradient(120% 90% at 50% 0%,#e7ecf7,#eceef8);display:flex;align-items:center;justify-content:center;overflow:hidden">
+<div style="height:380px;border-radius:20px;background:radial-gradient(120% 90% at 50% 0%,#e7ecf7,#eceef8);display:flex;align-items:center;justify-content:center;overflow:hidden;perspective:1150px;perspective-origin:52% 46%">
 <picture style="display:contents">
-<source type="image/webp" srcset="img/dolphin-app-375.webp 375w, img/dolphin-app-750.webp 750w" sizes="152px">
-<img src="img/dolphin-app.png" width="375" height="812" alt="The Dolphin app opening screen, showing dive insurance, dive log, reminders and certificates" loading="lazy" decoding="async" style="height:auto;max-height:87%;width:auto;display:block;border-radius:18px;box-shadow:0 16px 38px rgba(13,16,48,.28)">
+<source type="image/webp" srcset="img/dolphin-app-375.webp 375w, img/dolphin-app-750.webp 750w" sizes="(max-width:900px) 150px, 190px">
+<img data-tilt="" src="img/dolphin-app.png" width="375" height="812" alt="The Dolphin app opening screen, showing dive insurance, dive log, reminders and certificates" loading="lazy" decoding="async" style="height:auto;max-height:82%;width:auto;display:block;border-radius:18px">
 </picture>
 </div>
 <div>
